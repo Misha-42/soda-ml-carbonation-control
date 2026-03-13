@@ -1,0 +1,18 @@
+{
+  "target_t": {
+    "target": "target_t",
+    "best_model": "rf_shift_whitelist",
+    "MAE": 0.387203,
+    "RMSE": 0.475321,
+    "R2": 0.03603,
+    "reason": "best overall among compared models"
+  },
+  "target_cl": {
+    "target": "target_cl",
+    "best_model": "ridge",
+    "MAE": 0.645223,
+    "RMSE": 0.773226,
+    "R2": 0.087208,
+    "reason": "best MAE and better than RF"
+  }
+}

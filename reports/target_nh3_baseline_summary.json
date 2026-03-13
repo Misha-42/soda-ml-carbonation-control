@@ -1,0 +1,9 @@
+{
+  "target": "target_nh3",
+  "best_model": "rf_shift_whitelist",
+  "MAE": 1.334134,
+  "RMSE": 1.535068,
+  "R2": -0.009601,
+  "rank": 3,
+  "status": "hardest_target"
+}

@@ -1,0 +1,3 @@
+﻿target,best_model,MAE,RMSE,R2
+target_t,rf_shift_whitelist,0.387203,0.475321,0.03603
+target_cl,ridge,0.645223,0.773226,0.087208

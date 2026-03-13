@@ -1,0 +1,9 @@
+{
+  "target": "target_cl",
+  "best_model": "rf_shift_whitelist",
+  "MAE": 0.733118,
+  "RMSE": 0.806518,
+  "R2": 0.006915,
+  "rank": 2,
+  "status": "positive_r2"
+}

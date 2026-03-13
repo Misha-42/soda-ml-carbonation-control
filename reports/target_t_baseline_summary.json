@@ -1,0 +1,9 @@
+{
+  "target": "target_t",
+  "best_model": "rf_shift_whitelist",
+  "MAE": 0.387203,
+  "RMSE": 0.475321,
+  "R2": 0.03603,
+  "rank": 1,
+  "status": "best_target"
+}
