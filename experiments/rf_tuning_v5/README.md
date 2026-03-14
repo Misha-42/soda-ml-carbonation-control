@@ -1,31 +1,37 @@
+Да — сейчас `README` **сломался из‑за неверных ``` блоков**, поэтому и текст, и картинки рендерятся криво.
+Ниже даю **полностью исправленный файл**.
 
+---
 
-```markdown
+**Шаг 1 — замени весь `experiments/rf_tuning_v5/README.md` на этот текст**
+
+````markdown
 # RF / XGBoost Baseline for Soda Carbonation Process
 
-ML‑baseline проект для НИР по анализу технологического процесса производства кальцинированной соды.
+ML-baseline проект для НИР по анализу технологического процесса производства кальцинированной соды.
 
 Цель текущего этапа — быстро построить воспроизводимый baseline и сравнить две модели:
 
 - RandomForestRegressor
 - XGBRegressor
 
-Проект используется как основа для дальнейших экспериментов и развития ML‑модели управления процессом карбонизации.
+Проект используется как основа для дальнейших экспериментов и развития ML-модели управления процессом карбонизации.
 
 ---
 
-# Project overview
+## Project overview
 
 Процесс карбонизации — сложная нелинейная система, где множество технологических параметров влияет на целевой показатель процесса.
 
-Цель ML‑модели:
-
-предсказать целевой параметр процесса (например k1) на основе данных датчиков.
+Цель ML-модели: предсказать целевой параметр процесса (например, `k1`) на основе данных датчиков.
 
 Этот репозиторий содержит минимальный pipeline:
 
+`data → preprocessing → feature engineering → training → evaluation → reports`
 
-# ML pipeline
+---
+
+## ML pipeline
 
 ```mermaid
 flowchart LR
@@ -39,19 +45,13 @@ flowchart LR
     G --> H[Metrics]
     G --> I[Feature importance]
     G --> J[Reports and plots]
-
-```
-
-data → preprocessing → feature engineering → training → evaluation → reports
-
-```
+````
 
 ---
 
-# Repository structure
+## Repository structure
 
-```
-
+```text
 rf_tuning_v5
 │
 ├── data/                # входные данные
@@ -62,78 +62,71 @@ rf_tuning_v5
 │
 ├── requirements.txt     # зависимости
 └── README.md
-
 ```
 
 ---
 
-# Data
+## Data
 
 Данные должны лежать в папке:
 
-```
-
+```text
 data/
-
 ```
 
 Пример:
 
-```
-
+```text
 data/baseline_k1_6min_real.csv
-
-````
+```
 
 CSV должен содержать:
 
-| column | описание |
-|------|------|
-| target | целевая переменная |
+| column    | описание                        |
+| --------- | ------------------------------- |
+| target    | целевая переменная              |
 | timestamp | временная колонка (опционально) |
 
-Если присутствует `timestamp`, используется time‑based split.
+Если присутствует `timestamp`, используется time-based split.
 
 ---
 
-# ML Pipeline
+## ML pipeline components
 
-Основные компоненты проекта:
+### `src/data_prep.py`
 
-### data_prep.py
+* загрузка CSV
+* очистка данных
+* проверка обязательных колонок
+* train/test split
 
-- загрузка CSV
-- очистка данных
-- проверка обязательных колонок
-- train/test split
+### `src/features.py`
 
-### features.py
+* выбор числовых признаков
+* обработка пропусков
 
-- выбор числовых признаков
-- обработка пропусков
+### `src/train_baseline.py`
 
-### train_baseline.py
+Обучает модели:
 
-обучает модели:
+* RandomForest
+* XGBoost
 
-- RandomForest
-- XGBoost
+### `src/evaluate.py`
 
-### evaluate.py
-
-- вычисляет метрики
-- сохраняет отчёты
-- строит графики
+* вычисляет метрики
+* сохраняет отчёты
+* строит графики
 
 ---
 
-# Running baseline experiment
+## Running baseline experiment
 
 Установка зависимостей:
 
 ```bash
 pip install -r requirements.txt
-````
+```
 
 Запуск обучения:
 
@@ -152,11 +145,11 @@ python src/train_baseline.py --data-path data/file.csv --target target
 
 ---
 
-# Generated models
+## Generated models
 
 После обучения сохраняются модели:
 
-```
+```text
 models/
 ├── rf_small.joblib
 ├── rf_medium.joblib
@@ -166,57 +159,48 @@ models/
 
 ---
 
-# Reports
+## Reports
 
 Все результаты сохраняются в:
 
-```
+```text
 reports/
 ```
 
-Это сразу делает README визуально сильнее.
-
----
-
-```markdown
-# Key results
-
-## MAE comparison
-
-![MAE comparison](reports/rf_tuning_v5_mae_comparison.png)
-
-## RMSE comparison
-
-![RMSE comparison](reports/rf_tuning_v5_rmse_comparison.png)
-
-## Random Forest feature importance
-
-![RF feature importance](reports/rf_tuning_v5_rf_feature_importance.png)
-
-## XGBoost feature importance
-
-![XGBoost feature importance](reports/rf_tuning_v5_xgb_feature_importance.png)
-
 Основные файлы:
 
-```
+```text
 baseline_metrics.csv
 experiments_summary.csv
 baseline_report.md
-```
-
-Графики:
-
-```
-mae_comparison.png
-rmse_comparison.png
-rf_feature_importance.png
-xgb_feature_importance.png
+rf_tuning_v5_metrics.csv
+rf_tuning_v5_report.md
+rf_tuning_v5_experiments_summary.csv
 ```
 
 ---
 
-# Metrics
+## Key results
+
+### MAE comparison
+
+![MAE comparison](reports/rf_tuning_v5_mae_comparison.png)
+
+### RMSE comparison
+
+![RMSE comparison](reports/rf_tuning_v5_rmse_comparison.png)
+
+### Random Forest feature importance
+
+![RF feature importance](reports/rf_tuning_v5_rf_feature_importance.png)
+
+### XGBoost feature importance
+
+![XGBoost feature importance](reports/rf_tuning_v5_xgb_feature_importance.png)
+
+---
+
+## Metrics
 
 Для каждого эксперимента сохраняются:
 
@@ -224,17 +208,17 @@ xgb_feature_importance.png
 | ------ | ---------------------------- |
 | MAE    | Mean Absolute Error          |
 | RMSE   | Root Mean Squared Error      |
-| R²     | coefficient of determination |
+| R²     | Coefficient of determination |
 
 Все эксперименты записываются в:
 
-```
+```text
 experiments_summary.csv
 ```
 
 ---
 
-# Visualization
+## Visualization
 
 Pipeline автоматически строит:
 
@@ -245,7 +229,7 @@ Pipeline автоматически строит:
 
 ---
 
-# Next steps (NIR roadmap)
+## Next steps (NIR roadmap)
 
 Дальнейшее развитие проекта:
 
@@ -257,14 +241,22 @@ Pipeline автоматически строит:
 
 ---
 
-# Author
+## Author
 
 Research project for industrial process modeling using machine learning.
 
-```
+````
 
-Если хочешь, дальше можем за **5–7 минут сделать ещё сильнее**:
-- добавить **красивую схему ML pipeline**
-- вставить **графики результатов прямо в README**
-- сделать README **уровня research‑репозитория**.
-```
+---
+
+**Шаг 2 — сохрани и отправь изменения**
+
+В Colab:
+
+```python
+!git add experiments/rf_tuning_v5/README.md
+!git commit -m "Fix README formatting and add result plots"
+!git push origin main
+````
+
+Если после этого картинки все равно не покажутся, следующим сообщением дам **ровно 2 шага**, как быстро проверить пути к PNG.
