@@ -1,334 +1,308 @@
 
+# ML-система управления карбонизацией | БСК
 
 
-# ML-система адаптивного управления карбонизацией БСК
 
-Проект посвящён разработке **воспроизводимого baseline-контура машинного обучения**
-для прогнозирования сменных показателей процесса карбонизации бикарбонатной суспензии
-кальцинированной соды в рамках НИР-2 (АО «Башкирская содовая компания», Стерлитамак).
+Этот репозиторий — практическая часть НИР-2 по применению машинного обучения
+в производстве кальцинированной соды (АО «Башкирская содовая компания», Стерлитамак).
 
-> **Задача:** построить soft sensor / decision support контур, прогнозирующий
-> ключевые сменные показатели карбонизации по данным технологического процесса.
-
----
-
-## Содержание
-
-- [Мотивация и актуальность](#мотивация-и-актуальность)
-- [Постановка задачи](#постановка-задачи)
-- [Данные](#данные)
-- [Таргеты](#таргеты)
-- [Методология](#методология)
-- [Результаты](#результаты)
-- [Визуализация](#визуализация)
-- [Структура репозитория](#структура-репозитория)
-- [Научные выводы](#научные-выводы)
-- [Запуск](#запуск)
+Цель — построить **soft sensor**: модель, которая по текущим параметрам процесса
+предсказывает ключевые показатели карбонизации на смену вперёд.
+Это позволяет оператору реагировать проактивно, а не по факту отклонения.
 
 ---
 
-## Мотивация и актуальность
+## Зачем это нужно
 
-Процесс карбонизации аммонизированного рассола — ключевая стадия производства
-кальцинированной соды (Solvay-процесс). Переменное качество известкового молока
-и нестабильность параметров входного рассола ведут к отклонениям целевых показателей,
-браку и потерям.
+Процесс карбонизации аммонизированного рассола — центральная стадия Solvay-процесса.
+На практике лабораторный контроль проводится раз в смену, и если что-то пошло не так,
+оператор узнаёт об этом с задержкой 4–8 часов. За это время продукт уходит в брак,
+расходуется лишний реагент, нагружается оборудование.
 
-**Проблема:** Операторы принимают решения вручную, опираясь на лабораторный контроль
-раз в смену → запаздывание реакции 4-8 ч.
-
-**Решение:** ML-модель (soft sensor) — онлайн-прогноз на смену вперёд по текущим
-SCADA-параметрам → проактивное управление.
-
-**Аналоги в литературе:**
-- Афанасенко А.Г. (2008): нейросетевые модели карбонизации → +6–7% эффективности.
-- Математическая модель кинетики (2008): оптимизация температуры по принципу Понтрягина.
-- Старкова А.В. (2024): новая схема аммонизации → потери NH3 ↓ в 3 раза.
+ML-модель решает эту проблему: она обучается на исторических данных SCADA
+и выдаёт прогноз до того, как отклонение успевает накопиться.
+Аналогичный подход описан у Афанасенко А.Г. (2008) — нейросетевые модели
+дали прирост эффективности карбонизации на 6–7%. Мы идём тем же путём,
+но используем современные ансамблевые методы: Random Forest и XGBoost.
 
 ```mermaid
 flowchart LR
-    A[Проблема:<br/>ручное управление<br/>запаздывание 4-8ч] --> B[Решение:<br/>ML soft sensor<br/>прогноз на смену]
-    B --> C[Эффект:<br/>брак ↓2-5%<br/>NH3 потери ↓]
+    A([🏭 SCADA\nпараметры]) --> B([🤖 ML soft sensor])
+    B --> C([📊 Прогноз\nна смену])
+    C --> D([👷 Оператор\nреагирует заранее])
+    D --> E([✅ Брак ↓2–5%\nNH3 потери ↓])
+
+    style A fill:#dbeafe,stroke:#2563eb,color:#1e3a5f
+    style B fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    style C fill:#dcfce7,stroke:#16a34a,color:#14532d
+    style D fill:#f3e8ff,stroke:#9333ea,color:#3b0764
+    style E fill:#d1fae5,stroke:#059669,color:#064e3b
 ```
 
 ---
 
-## Постановка задачи
+## Что исследуется
 
-**Цель:** Построить и зафиксировать воспроизводимый baseline для трёх сменных
-таргетов карбонизации с оценкой качества и устойчивости прогноза.
+В рамках НИР-2 я строю baseline для трёх сменных показателей карбонизации.
+Выбор именно этих таргетов обусловлен их технологической значимостью
+и доступностью в лабораторных журналах БСК.
 
-**Задачи:**
-1. Сформировать сменный ML-датасет из лабораторных Excel.
-2. Отобрать технологически осмысленные признаки (white-list).
-3. Сравнить baseline-модели: RF, Ridge, GB.
-4. Зафиксировать метрики и контрольную точку НИР-2.
+| Таргет | Описание | Сложность прогноза |
+|--------|----------|--------------------|
+| `target_t` | Температура суспензии NaHCO₃, °C | 🟢 Низкая |
+| `target_cl` | Содержание Cl⁻ ионов, г/л | 🟡 Средняя |
+| `target_nh3` | Свободный NH₃, г/л | 🔴 Высокая |
 
-**Гипотезы:**
-- H1: RF превосходит Ridge для нелинейных таргетов (t, NH3).
-- H2: Ручной white-list > полный feat space (n=34 < p).
-- H3: Baseline достаточен для последующего улучшения XGBoost + SHAP.
+Основная гипотеза: нелинейные модели (RF, XGBoost) покажут лучшее качество,
+чем линейная регрессия, а технологически осмысленный отбор признаков (white-list)
+окажется надёжнее полного автоматического отбора при малой выборке n=34.
 
 ---
 
 ## Данные
 
-| Параметр | Значение |
-|----------|----------|
-| Источник | 17 Excel-файлов лабораторного контроля |
-| Период | 20.02.2026 – 08.03.2026 |
-| Листы | `Лист контроля`, `Качеств.показатели` |
-| Ед. наблюдения | **1 строка = 1 смена** |
-| Размер датасета | **n = 34** (17 дней × 2 смены) |
-| Split | Time-ordered 70/30 (no shuffle) |
+Данные собраны из 17 Excel-файлов лабораторного контроля за период
+20.02.2026 – 08.03.2026. Единица наблюдения — одна смена,
+итоговый датасет: **34 строки** (17 дней × 2 смены).
 
-**Датасеты:**
-
-```
-carbonation_full_dataset.csv
-carbonation_full_dataset_ml_ready.csv
-carbonation_full_dataset_for_ml.csv
-shift_dataset_export.csv
-```
-
-**Признаковое пространство (white-list):**
+Разбиение — time-ordered 70/30 без перемешивания: обучение на ранних сменах,
+тест на поздних. Это исключает утечку данных из будущего.
+Признаки — white-list из технологически значимых параметров:
+pH входного рассола, расход CO₂, температура известкового молока,
+концентрации NH₃ и Cl⁻.
 
 ```mermaid
 flowchart TD
-    A[17 Excel raw] --> B[Parse sheets<br/>Лист контроля]
-    B --> C[Shift aggregation<br/>n=34 obs]
-    C --> D[White-list filter<br/>pH, CO2, temp, NH3, Cl-]
-    D --> E[Time split 70/30<br/>no leakage]
-    E --> F[Baseline models]
+    A([📂 17 Excel\nлабконтроль]) --> B([🔄 Агрегация\nпо сменам n=34])
+    B --> C([🔍 White-list\npH · CO₂ · T · NH₃ · Cl⁻])
+    C --> D([✂️ Time split\n70% train / 30% test])
+    D --> E([🌲 RF])
+    D --> F([📐 Ridge])
+    D --> G([🚀 GB])
+
+    style A fill:#dbeafe,stroke:#2563eb
+    style B fill:#e0f2fe,stroke:#0284c7
+    style C fill:#fef9c3,stroke:#ca8a04
+    style D fill:#f3e8ff,stroke:#9333ea
+    style E fill:#dcfce7,stroke:#16a34a
+    style F fill:#dcfce7,stroke:#16a34a
+    style G fill:#dcfce7,stroke:#16a34a
 ```
-
----
-
-## Таргеты
-
-| # | Таргет | Описание | Диапазон | Сложность |
-|---|--------|----------|----------|-----------|
-| 1 | `target_t` | Температура сусп. NaHCO3, °C | 45–55 | Низкая |
-| 2 | `target_cl` | Содержание Cl⁻ ионов, г/л | 0.1–1.0 | Средняя |
-| 3 | `target_nh3` | Свободный NH3, г/л | 0.5–2.5 | **Высокая** |
 
 ---
 
 ## Методология
 
-**Модели:**
-- `RandomForestRegressor` (n_estimators=100, white-list feat).
-- `Ridge` (alpha=1.0, стандартизация).
-- `GradientBoostingRegressor` (для сравнения).
-
-**Метрики:** MAE, RMSE, \( R^2 \).
-
-**Валидация:** holdout test (time-ordered split), без перетасовки.
-
-**Pipeline:**
+Я сравниваю три модели: `RandomForestRegressor`, `Ridge` и `GradientBoostingRegressor`.
+Ridge включён как линейный baseline — чтобы проверить, есть ли в данных нелинейный сигнал.
+Метрики оценки: MAE, RMSE и \( R^2 \). Валидация — holdout на отложенной тестовой выборке
+с сохранением временного порядка.
 
 ```mermaid
 graph TB
-    A[Load CSV] --> B[Time split 70/30]
-    B --> C[White-list features]
-    C --> D[Fit RF / Ridge / GB<br/>on train]
-    D --> E[Predict test]
-    E --> F[MAE / RMSE / R²]
-    style D fill:#f0f4ff,stroke:#4a6fa5
-    style F fill:#f0fff4,stroke:#4a9a5a
+    A([📥 Load CSV]) --> B([✂️ Time split 70/30])
+    B --> C([🔍 White-list features])
+    C --> D([⚙️ Fit RF / Ridge / GB\non train])
+    D --> E([🎯 Predict test])
+    E --> F([📊 MAE · RMSE · R²])
+
+    style A fill:#dbeafe,stroke:#2563eb
+    style B fill:#e0f2fe,stroke:#0284c7
+    style C fill:#fef9c3,stroke:#ca8a04
+    style D fill:#f3e8ff,stroke:#9333ea
+    style E fill:#dcfce7,stroke:#16a34a
+    style F fill:#d1fae5,stroke:#059669
 ```
 
-**Код pipeline:**
-
 ```python
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import numpy as np
-
 models = {
     "rf_shift_whitelist": RandomForestRegressor(n_estimators=100, random_state=42),
     "ridge":              Ridge(alpha=1.0)
 }
-
 for name, model in models.items():
     model.fit(X_train[whitelist], y_train)
     pred = model.predict(X_test[whitelist])
-    print(name, "MAE:", mean_absolute_error(y_test, pred),
-                "RMSE:", np.sqrt(mean_squared_error(y_test, pred)),
-                "R²:", r2_score(y_test, pred))
+    print(name, "RMSE:", np.sqrt(mean_squared_error(y_test, pred)),
+                "R²:",   r2_score(y_test, pred))
 ```
 
 ---
 
 ## Результаты
 
-### Лучшие модели по таргету
+Для `target_t` лучшим оказался Random Forest: RMSE=0.475, \( R^2 \)=0.036.
+Для `target_cl` неожиданно победила Ridge-регрессия: RMSE=0.773, \( R^2 \)=0.087 —
+это говорит о том, что зависимость здесь близка к линейной.
+`target_nh3` пока не поддаётся: \( R^2 \)=−0.010, что хуже наивного прогноза средним.
+Это приоритет для следующего этапа — XGBoost с расширенным набором признаков.
 
-| Таргет | Модель | MAE | RMSE | \( R^2 \) | Статус |
-|--------|--------|-----|------|-----------|--------|
-| `target_t` | **rf_shift_whitelist** | **0.3872** | **0.4753** | **0.0360** | ✅ Baseline OK |
-| `target_cl` | **ridge** | **0.6452** | **0.7732** | **0.0872** | ✅ Baseline OK |
-| `target_nh3` | rf_shift_whitelist | 1.3341 | 1.5351 | -0.0096 | ⚠️ Улучшить |
+| Таргет | Лучшая модель | MAE | RMSE | \( R^2 \) | |
+|--------|--------------|-----|------|-----------|--|
+| `target_t` | **RF whitelist** | 0.387 | 0.475 | 0.036 | ✅ |
+| `target_cl` | **Ridge** | 0.645 | 0.773 | 0.087 | ✅ |
+| `target_nh3` | RF whitelist | 1.334 | 1.535 | −0.010 | ⚠️ |
 
-> **Примечание по R²:** Значения R² на уровне 0.04–0.09 реалистичны для
-> n=34 наблюдений при малой обучающей выборке. Baseline фиксирует стартовую
-> точку — дальнейший рост ожидается при XGBoost + SHAP + доп.данных [ВЕТКА 4].
-
-### Полное сравнение (top-3 per target)
-
-| Target | Модель1 | MAE / RMSE / R² | Модель2 | Модель3 |
-|--------|---------|-----------------|---------|---------|
-| **t** | **RF wl** | **0.39/0.48/0.04** | GB: 0.41/0.52/0.02 | Ridge: 0.55/0.68/-0.10 |
-| **Cl** | **Ridge** | **0.65/0.77/0.09** | RF: 0.72/0.89/0.03 | GB: 0.78/0.95/-0.02 |
-| **NH3** | RF wl | 1.33/1.54/-0.01 | Ridge: 1.45/1.67/-0.15 | GB: 1.52/1.78/-0.22 |
-
-### Ключевые выводы
-
-- **H1 подтверждена:** RF лучше Ridge для `target_t` (нелин.зависимость).
-- **H1 опровергнута:** Для `target_cl` Ridge точнее → линейная связь.
-- **H2 подтверждена:** White-list feat стабилен при малом n.
-- **H3 частично:** Baseline зафиксирован, `target_nh3` требует доработки.
+Значения \( R^2 \) на уровне 0.04–0.09 — реалистичная картина для n=34.
+Baseline зафиксирован: дальнейший рост ожидается при XGBoost + SHAP + расширении выборки.
 
 ---
 
-## Визуализация
+## Графики
 
-### Динамика RMSE по таргетам и моделям
+### RMSE по таргетам и моделям
 
 ```mermaid
 xychart-beta
-    title "RMSE по таргетам"
-    x-axis ["target_t RF", "target_t Ridge", "target_cl RF", "target_cl Ridge", "target_nh3 RF"]
+    title "RMSE — все модели и таргеты"
+    x-axis ["t · RF", "t · Ridge", "cl · RF", "cl · Ridge", "nh3 · RF"]
     y-axis "RMSE" 0 --> 2
     bar [0.475, 0.680, 0.890, 0.773, 1.535]
 ```
 
-### R² по лучшим моделям
+### R² лучших моделей
 
 ```mermaid
 xychart-beta
-    title "R² best models"
-    x-axis ["target_t RF", "target_cl Ridge", "target_nh3 RF"]
-    y-axis "R²" -0.1 --> 0.15
+    title "R² — лучшие модели по таргету"
+    x-axis ["target_t  RF", "target_cl  Ridge", "target_nh3  RF"]
+    y-axis "R²" -0.05 --> 0.15
     bar [0.036, 0.087, -0.010]
 ```
 
-### Feature importance target_t
+### Feature importance — target_t
 
 ```mermaid
 xychart-beta
     title "Feature Importance RF (target_t)"
     x-axis ["pH_in", "CO2_flow", "temp_milk", "NH3_cons", "Cl_in"]
-    y-axis "Importance" 0 --> 0.3
+    y-axis "Importance" 0 --> 0.35
     bar [0.28, 0.22, 0.18, 0.15, 0.12]
 ```
 
-### Выбор модели по таргету
+Доминируют pH входного рассола и расход CO₂ — это согласуется с кинетикой
+процесса карбонизации: именно эти параметры определяют скорость осаждения NaHCO₃.
+
+### Логика выбора модели
 
 ```mermaid
 graph TD
-    A[Новый таргет] --> B{Линейность?}
-    B -->|Линейная зависимость| C[Ridge<br/>target_cl: R²=0.087]
-    B -->|Нелинейная| D[RandomForest<br/>target_t: R²=0.036]
+    A([🎯 Новый таргет]) --> B{Линейный\nсигнал?}
+    B -->|Да| C([📐 Ridge\ntarget_cl · R²=0.087])
+    B -->|Нет| D([🌲 Random Forest\ntarget_t · R²=0.036])
     D --> E{R² > 0?}
-    E -->|Нет| F[XGBoost + feat.eng<br/>target_nh3]
-    E -->|Да| G[Baseline OK]
+    E -->|Да| F([✅ Baseline OK\nЗафиксировать])
+    E -->|Нет| G([🚀 XGBoost\n+ feat.eng\ntarget_nh3 ⚠️])
+
+    style A fill:#dbeafe,stroke:#2563eb
+    style B fill:#fef9c3,stroke:#ca8a04
+    style C fill:#dcfce7,stroke:#16a34a
+    style D fill:#dcfce7,stroke:#16a34a
+    style F fill:#d1fae5,stroke:#059669
+    style G fill:#fff7ed,stroke:#ea580c
 ```
 
-### 4. Actual vs Predicted (PNG из plots_ru/)
+**[Рис. 6.1]** Actual vs Predicted — `target_t`:
+![target_t](plots_ru/target_t_actual_vs_pred_ru.png)
 
-**[Рис. 6.1]** Actual vs Predicted — target_t:
-![target_t actual vs pred](plots_ru/target_t_actual_vs_pred_ru.png)
+**[Рис. 6.2]** Сравнение MAE — `target_t` / `target_cl`:
+![MAE](plots_ru/model_compare_t_cl_mae_ru.png)
 
-**[Рис. 6.2]** MAE сравнение моделей — target_t / target_cl:
-![MAE models t cl](plots_ru/model_compare_t_cl_mae_ru.png)
-
-**[Рис. 6.3]** Остатки — target_nh3:
-![NH3 residuals](plots_ru/target_nh3_residuals_hist_ru.png)
+**[Рис. 6.3]** Остатки — `target_nh3`:
+![NH3](plots_ru/target_nh3_residuals_hist_ru.png)
 
 ---
 
-## Структура репозитория
+## Эксперименты
+
+Каждый эксперимент живёт в отдельной папке со своим README, кодом и отчётами.
+
+### 🔬 [target1 v6 — RF top_100 (98 obs.)](https://github.com/Misha-42/soda-ml-carbonation-control/tree/main/experiments/soda-ml-nir_targetB_v6)
+
+Здесь исследуется SCADA-таргет с 98 наблюдениями. Ключевое решение —
+отбор top_100 признаков по важности только на тренировочной выборке
+(без утечки на тест). Итог: RMSE=3.997, \( R^2 \)=0.165,
+устойчивость подтверждена на TimeSeriesSplit(4).
+
+> [📂 Папка](https://github.com/Misha-42/soda-ml-carbonation-control/tree/main/experiments/soda-ml-nir_targetB_v6) · [📄 README](https://github.com/Misha-42/soda-ml-carbonation-control/blob/main/experiments/soda-ml-nir_targetB_v6/README.md)
+
+---
+
+### 🔬 [RF + XGBoost — k1 (rf_tuning_v5)](https://github.com/Misha-42/soda-ml-carbonation-control/tree/main/experiments/rf_tuning_v5)
+
+Сравнение Random Forest и XGBoost на целевом показателе k1.
+Данные агрегированы в 6-минутные окна. Четыре конфигурации модели —
+small и medium для каждого алгоритма. Метрики фиксируются в `reports/baseline_metrics.csv`.
+
+> [📂 Папка](https://github.com/Misha-42/soda-ml-carbonation-control/tree/main/experiments/rf_tuning_v5) · [📄 README](https://github.com/Misha-42/soda-ml-carbonation-control/blob/main/experiments/rf_tuning_v5/README.md)
+
+---
+
+### ⏳ В работе
+
+| Задача | Статус | Ветка |
+|--------|--------|-------|
+| XGBoost для `target_nh3` | 🔄 | [ВЕТКА 4] |
+| SHAP-интерпретация | 📋 | [ВЕТКА 3] |
+| LightGBM сравнение | 📋 | [ВЕТКА 5] |
+
+---
+
+## Структура
 
 ```text
 .
-├── nir/
-│   ├── 05_experiments.md        # Описание экспериментов
-│   ├── 06_results.md            # Результаты и таблицы
-│   ├── 07_conclusion.md         # Выводы
-│   └── 08_limitations_and_next_steps.md
-│
-├── reports/
-│   ├── baseline_report.md
-│   ├── baseline_summary_all_targets.csv
-│   ├── baseline_metrics.csv
-│   ├── model_compare_t_cl.csv
-│   ├── best_model_t_cl.json
-│   ├── target_t_baseline_summary.json
-│   ├── target_cl_baseline_summary.json
-│   └── target_nh3_baseline_summary.json
-│
-├── plots_ru/
-│   ├── target_t_actual_vs_pred_ru.png
-│   ├── model_compare_t_cl_mae_ru.png
-│   ├── target_nh3_residuals_hist_ru.png
-│   ├── FIGURE_CAPTIONS_RU.md
-│   ├── FIGURES_FOR_NIR_ORDER_RU.md
-│   └── READY_FOR_NIR_CHECKLIST.md
-│
-├── data/
-│   ├── carbonation_full_dataset_ml_ready.csv
-│   └── shift_dataset_export.csv
-│
+├── experiments/
+│   ├── soda-ml-nir_targetB_v6/   ← target1 RF top_100
+│   └── rf_tuning_v5/             ← k1 RF + XGBoost
+├── nir/                          ← текст НИР-2
+├── reports/                      ← метрики CSV/JSON
+├── plots_ru/                     ← графики ГОСТ
+├── data/                         ← датасеты
 ├── src/
 │   └── baseline_pipeline.py
-│
-├── PROJECT_PROGRESS.md
-├── DECISION.txt
 └── README.md
 ```
 
 ---
 
-## Научные выводы
+## Выводы
 
-1. **Разнородие оптимальных моделей** — target_t/NH3 нелинейны (RF),
-   target_cl линеен (Ridge). Единой модели нет.
-2. **White-list feat работает** — технол.осмысленный отбор стабилен при малом n.
-3. **n=34 — граница малых данных** — необходимы TS CV и расширение выборки.
-4. **target_nh3 — приоритет** — R²<0, нужны: feat.eng + XGBoost + выбросы.
-5. **Baseline зафиксирован** — воспроизводим, machine-readable (CSV/JSON/MD).
+Главный вывод: единой лучшей модели нет. Для нелинейных таргетов (t, NH3)
+выигрывает Random Forest, для линейного (Cl⁻) — Ridge. Это говорит о том,
+что природа зависимостей в разных показателях принципиально разная,
+и подход к моделированию должен быть таргет-специфичным.
 
-### Следующие шаги [НИР-2 →]
+White-list признаков показал себя надёжнее полного автоматического отбора
+при малой выборке — технологическое знание помогает там, где данных мало.
+`target_nh3` остаётся открытой задачей: планируется XGBoost с расширенным
+feat engineering и обработкой выбросов на следующем этапе НИР-2.
+
+**Ожидаемый эффект внедрения:** брак ↓2–5%, потери NH3 ↓, упреждение ↑4–8 ч.
 
 | Приоритет | Задача | Ветка |
 |-----------|--------|-------|
-| 🔴 Высокий | XGBoost для target_nh3 | [ВЕТКА 4] |
-| 🔴 Высокий | SHAP-интерпретация feat | [ВЕТКА 3] |
-| 🟡 Средний | Расширение датасета (3 мес.) | [ВЕТКА 1] |
-| 🟡 Средний | LightGBM / ExtraTrees | [ВЕТКА 5] |
-| 🟢 Низкий | Интеграция Experion PKS | [ВЕТКА 6] |
-
-**Экономический эффект (оценка):** Soft sensor → брак ↓2–5%,
-потери NH3 ↓, оперативность управления ↑4–8 ч.
+| 🔴 | XGBoost для target_nh3 | [ВЕТКА 4] |
+| 🔴 | SHAP-интерпретация | [ВЕТКА 3] |
+| 🟡 | Расширение датасета | [ВЕТКА 1] |
+| 🟡 | LightGBM / ExtraTrees | [ВЕТКА 5] |
+| 🟢 | Интеграция Experion PKS | [ВЕТКА 6] |
 
 ---
 
 ## Запуск
 
 ```bash
-# Установка зависимостей
 pip install -r requirements.txt
 
-# Baseline для target_t
+# Один таргет
 python src/baseline_pipeline.py --target target_t --model rf_shift_whitelist
-
-# Baseline для target_cl
-python src/baseline_pipeline.py --target target_cl --model ridge
 
 # Все таргеты + отчёт
 python src/baseline_pipeline.py --all --output reports/
-# → metrics.json + plots_ru/*.png + baseline_report.md
+```
+
+---
+
+*НИР-2 · УГНТУ · кафедра АТП · 2026 · АО «БСК», Стерлитамак*
 ```
 
