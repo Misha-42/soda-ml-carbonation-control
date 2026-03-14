@@ -32,11 +32,11 @@ flowchart LR
     C --> D([👷 Оператор\nреагирует заранее])
     D --> E([✅ Брак ↓2–5%\nNH3 потери ↓])
 
-    style A fill:#dbeafe,stroke:#2563eb,color:#1e3a5f
-    style B fill:#fef9c3,stroke:#ca8a04,color:#713f12
-    style C fill:#dcfce7,stroke:#16a34a,color:#14532d
-    style D fill:#f3e8ff,stroke:#9333ea,color:#3b0764
-    style E fill:#d1fae5,stroke:#059669,color:#064e3b
+    style A fill:#dbeafe,stroke:#2563eb,color:#1a1a1a
+    style B fill:#fef9c3,stroke:#ca8a04,color:#1a1a1a
+    style C fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+    style D fill:#f3e8ff,stroke:#9333ea,color:#1a1a1a
+    style E fill:#d1fae5,stroke:#059669,color:#1a1a1a
 ```
 
 ---
@@ -80,13 +80,13 @@ flowchart TD
     D --> F([📐 Ridge])
     D --> G([🚀 GB])
 
-    style A fill:#dbeafe,stroke:#2563eb
-    style B fill:#e0f2fe,stroke:#0284c7
-    style C fill:#fef9c3,stroke:#ca8a04
-    style D fill:#f3e8ff,stroke:#9333ea
-    style E fill:#dcfce7,stroke:#16a34a
-    style F fill:#dcfce7,stroke:#16a34a
-    style G fill:#dcfce7,stroke:#16a34a
+    style A fill:#dbeafe,stroke:#2563eb,color:#1a1a1a
+    style B fill:#e0f2fe,stroke:#0284c7,color:#1a1a1a
+    style C fill:#fef9c3,stroke:#ca8a04,color:#1a1a1a
+    style D fill:#f3e8ff,stroke:#9333ea,color:#1a1a1a
+    style E fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+    style F fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+    style G fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
 ```
 
 ---
@@ -106,12 +106,12 @@ graph TB
     D --> E([🎯 Predict test])
     E --> F([📊 MAE · RMSE · R²])
 
-    style A fill:#dbeafe,stroke:#2563eb
-    style B fill:#e0f2fe,stroke:#0284c7
-    style C fill:#fef9c3,stroke:#ca8a04
-    style D fill:#f3e8ff,stroke:#9333ea
-    style E fill:#dcfce7,stroke:#16a34a
-    style F fill:#d1fae5,stroke:#059669
+    style A fill:#dbeafe,stroke:#2563eb,color:#1a1a1a
+    style B fill:#e0f2fe,stroke:#0284c7,color:#1a1a1a
+    style C fill:#fef9c3,stroke:#ca8a04,color:#1a1a1a
+    style D fill:#f3e8ff,stroke:#9333ea,color:#1a1a1a
+    style E fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+    style F fill:#d1fae5,stroke:#059669,color:#1a1a1a
 ```
 
 ```python
@@ -193,12 +193,13 @@ graph TD
     E -->|Да| F([✅ Baseline OK\nЗафиксировать])
     E -->|Нет| G([🚀 XGBoost\n+ feat.eng\ntarget_nh3 ⚠️])
 
-    style A fill:#dbeafe,stroke:#2563eb
-    style B fill:#fef9c3,stroke:#ca8a04
-    style C fill:#dcfce7,stroke:#16a34a
-    style D fill:#dcfce7,stroke:#16a34a
-    style F fill:#d1fae5,stroke:#059669
-    style G fill:#fff7ed,stroke:#ea580c
+    style A fill:#dbeafe,stroke:#2563eb,color:#1a1a1a
+    style B fill:#fef9c3,stroke:#ca8a04,color:#1a1a1a
+    style C fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+    style D fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+    style E fill:#fef9c3,stroke:#ca8a04,color:#1a1a1a
+    style F fill:#d1fae5,stroke:#059669,color:#1a1a1a
+    style G fill:#fff7ed,stroke:#ea580c,color:#1a1a1a
 ```
 
 **[Рис. 6.1]** Actual vs Predicted — `target_t`:
@@ -301,8 +302,6 @@ python src/baseline_pipeline.py --target target_t --model rf_shift_whitelist
 python src/baseline_pipeline.py --all --output reports/
 ```
 
----
 
-*НИР-2 · УГНТУ · кафедра АТП · 2026 · АО «БСК», Стерлитамак*
-```
 
+**Исправлено:** `color:#1a1a1a` добавлен во **все** 20 узлов всех 4 диаграмм — текст теперь чёрный на любом фоне. Также добавил `color:#1a1a1a` к узлу `B` (ромб с вопросом) в decision tree — там тоже был цветной. [ВЕТКА 13]
