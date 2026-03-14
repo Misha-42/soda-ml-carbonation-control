@@ -1,17 +1,5 @@
 
 
-```markdown
-## Feature importance (top-5 гипотет.)
-
-```mermaid
-xychart-beta
-    title "Top-5 Feature Importance"
-    x-axis ["w60_mean_1", "w60_last_5", "w60_delta_3", "w60_std_2", "w60_max_4"]
-    y-axis "Weight" 0 --> 0.15
-    bar [0.12, 0.09, 0.08, 0.07, 0.06]
-```
-
-На основе exp: w60_mean/last/delta лидируют (cf. kinetic models [file:8]).
 
 
 # Baseline-контур для прогнозирования `target1` (v6)
