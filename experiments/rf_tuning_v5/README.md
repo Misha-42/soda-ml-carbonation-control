@@ -1,9 +1,4 @@
-Да — сейчас `README` **сломался из‑за неверных ``` блоков**, поэтому и текст, и картинки рендерятся криво.
-Ниже даю **полностью исправленный файл**.
 
----
-
-**Шаг 1 — замени весь `experiments/rf_tuning_v5/README.md` на этот текст**
 
 ````markdown
 # RF / XGBoost Baseline for Soda Carbonation Process
@@ -247,16 +242,4 @@ Research project for industrial process modeling using machine learning.
 
 ````
 
----
 
-**Шаг 2 — сохрани и отправь изменения**
-
-В Colab:
-
-```python
-!git add experiments/rf_tuning_v5/README.md
-!git commit -m "Fix README formatting and add result plots"
-!git push origin main
-````
-
-Если после этого картинки все равно не покажутся, следующим сообщением дам **ровно 2 шага**, как быстро проверить пути к PNG.
