@@ -13,7 +13,6 @@ xychart-beta
 
 На основе exp: w60_mean/last/delta лидируют (cf. kinetic models [file:8]).
 
-# Полный README.md (v7 — готов к копированию)
 
 # Baseline-контур для прогнозирования `target1` (v6)
 
