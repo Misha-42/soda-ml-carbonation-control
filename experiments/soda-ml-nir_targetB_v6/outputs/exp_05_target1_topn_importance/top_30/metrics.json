@@ -1,0 +1,54 @@
+{
+  "experiment_name": "target1_exp05_topn_importance",
+  "variant": "top_30",
+  "dataset_path": "C:\\Users\\user\\Desktop\\soda-ml-nir-main\\soda-ml-nir-main\\soda-ml-nir_targetB_v6\\launch_target1_k1\\dataset_target1_baseline_v1.csv",
+  "target_col": "target_value",
+  "time_col": "target_timestamp_for_scada",
+  "n_features_selected": 30,
+  "rf_params": {
+    "n_estimators": 300,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "metrics": {
+    "MAE": 3.332402777777787,
+    "RMSE": 4.129147002214272,
+    "R2": 0.10844228847261317
+  },
+  "selected_features": [
+    "w60__last__s03_fic12063_pida_op",
+    "w60__min__s10_ti12090_daca_pv",
+    "w60__last__s05_lic12013_daca_pv",
+    "w60__std__s01_ti12029_daca_pv",
+    "w60__max__s10_fic12083_pida_op",
+    "w60__min__s10_tic12103_pida_op",
+    "w60__std__s07_fic12080_daca_pv",
+    "w60__mean__s03_tic12096_pida_op",
+    "w60__std__s10_ti12090_daca_pv",
+    "w60__max__s07_lic12015_daca_pv",
+    "w60__last__s01_ti12055_daca_pv",
+    "w60__mean__s05_tic12072_pida_op",
+    "w60__last__s08_fic12068_pida_op",
+    "w60__delta__s10_fic12070_daca_pv",
+    "w60__mean__s10_ti12090_daca_pv",
+    "w60__min__s10_fic12070_daca_pv",
+    "w60__last__s04_fic12077_daca_pv",
+    "w60__max__s02_ti12030_daca_pv",
+    "w60__delta__s04_fic12064_daca_pv",
+    "w60__max__s10_fic12083_daca_pv",
+    "w60__max__s08_ti12036_daca_pv",
+    "w60__max__s05_tic12098_daca_pv",
+    "w60__delta__s08_lic12016_daca_pv",
+    "w60__std__s01_fic12061_daca_pv",
+    "w60__delta__s12_ti12066_daca_pv",
+    "w60__min__s02_fic12075_daca_pv",
+    "w60__max__s05_ti12033_daca_pv",
+    "w60__last__s07_fic12080_daca_pv",
+    "w60__min__s06_lic12017_daca_pv",
+    "w60__last__s10_ti12090_daca_pv"
+  ],
+  "comparison_vs_exp02_rf": {
+    "delta_RMSE": 0.012479002214272228,
+    "delta_R2": -0.005380711527386825
+  }
+}

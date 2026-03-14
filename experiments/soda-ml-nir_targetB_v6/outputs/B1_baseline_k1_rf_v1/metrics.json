@@ -1,0 +1,24 @@
+{
+  "experiment_name": "B1_baseline_k1_rf_v1",
+  "data_path": "C:\\Users\\user\\Desktop\\soda-ml-nir-main\\soda-ml-nir-main\\soda-ml-nir_targetB_v6\\merged_dataset_B1_v1.xlsx",
+  "sheet_name": "MERGED_B1",
+  "target_col": "target_B1_sv_NH3_susp",
+  "date_col": "lab_date",
+  "shift_col": "shift",
+  "time_col": "time_idx",
+  "n_rows": 34,
+  "n_features": 10,
+  "train_size": 27,
+  "test_size": 7,
+  "rf_params": {
+    "n_estimators": 300,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "metrics": {
+    "MAE": 1.5152380952381321,
+    "RMSE": 1.6414063269522554,
+    "R2": -2.0348625696042792
+  },
+  "dropped_non_numeric_count": 0
+}

@@ -1,0 +1,5 @@
+experiment_name,model,params,mae,rmse,r2,run_date
+rf_small,RandomForestRegressor,"{""n_estimators"": 100, ""random_state"": 42, ""n_jobs"": -1}",1.7021897321428592,2.3115224893165287,0.3243880937892033,2026-03-09T11:40:16
+rf_medium,RandomForestRegressor,"{""n_estimators"": 250, ""max_depth"": 10, ""random_state"": 42, ""n_jobs"": -1}",1.7412451852358655,2.3472746048360977,0.30332721013309527,2026-03-09T11:40:16
+xgb_small,XGBRegressor,"{""n_estimators"": 200, ""max_depth"": 4, ""learning_rate"": 0.05, ""subsample"": 0.9, ""colsample_bytree"": 0.9, ""random_state"": 42, ""n_jobs"": -1}",1.590440331186567,2.2084141801762973,0.383316821271253,2026-03-09T11:40:16
+xgb_medium,XGBRegressor,"{""n_estimators"": 300, ""max_depth"": 6, ""learning_rate"": 0.05, ""subsample"": 0.9, ""colsample_bytree"": 0.9, ""random_state"": 42, ""n_jobs"": -1}",1.6534855315798804,2.3939081982582717,0.2753704634934315,2026-03-09T11:40:16

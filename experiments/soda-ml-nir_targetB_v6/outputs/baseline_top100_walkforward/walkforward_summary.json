@@ -1,0 +1,57 @@
+{
+  "experiment_name": "target1_baseline_top100_walkforward",
+  "dataset_path": "C:\\Users\\user\\Desktop\\soda-ml-nir-main\\soda-ml-nir-main\\soda-ml-nir_targetB_v6\\launch_target1_k1\\dataset_target1_baseline_v1.csv",
+  "features_path": "C:\\Users\\user\\Desktop\\soda-ml-nir-main\\soda-ml-nir-main\\soda-ml-nir_targetB_v6\\outputs\\exp_05_target1_topn_importance\\baseline_feature_set_top100.csv",
+  "target_col": "target_value",
+  "time_col": "target_timestamp_for_scada",
+  "n_rows": 98,
+  "n_features": 100,
+  "n_splits": 4,
+  "rf_params": {
+    "n_estimators": 300,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "folds": [
+    {
+      "fold": "fold_1",
+      "train_size": 22,
+      "test_size": 19,
+      "MAE": 2.1229035087719246,
+      "RMSE": 2.7812289922694142,
+      "R2": 0.019811528335607842
+    },
+    {
+      "fold": "fold_2",
+      "train_size": 41,
+      "test_size": 19,
+      "MAE": 4.032999999999996,
+      "RMSE": 5.1724659839481495,
+      "R2": 0.21686048662078194
+    },
+    {
+      "fold": "fold_3",
+      "train_size": 60,
+      "test_size": 19,
+      "MAE": 4.291105263157874,
+      "RMSE": 4.755381059609426,
+      "R2": 0.16653890705436947
+    },
+    {
+      "fold": "fold_4",
+      "train_size": 79,
+      "test_size": 19,
+      "MAE": 3.160833333333323,
+      "RMSE": 3.9201551698935075,
+      "R2": 0.18150432452198428
+    }
+  ],
+  "summary": {
+    "MAE_mean": 3.4019605263157793,
+    "MAE_std": 0.8489579432641865,
+    "RMSE_mean": 4.157307801430124,
+    "RMSE_std": 0.9135195697614263,
+    "R2_mean": 0.14617881163318588,
+    "R2_std": 0.07521139344121819
+  }
+}

@@ -1,0 +1,30 @@
+Эксперимент: target1_exp04_mean_last_only
+Датасет: C:\Users\user\Desktop\soda-ml-nir-main\soda-ml-nir-main\soda-ml-nir_targetB_v6\launch_target1_k1\dataset_target1_baseline_v1.csv
+Число строк: 98
+Число признаков: 256
+Размер train: 78
+Размер test: 20
+
+Результаты моделей:
+Ridge
+  MAE: 11.380769
+  RMSE: 16.040532
+  R2: -12.454462
+
+Random Forest
+  MAE: 3.245783
+  RMSE: 4.156987
+  R2: 0.096379
+
+Gradient Boosting
+  MAE: 3.026582
+  RMSE: 4.534120
+  R2: -0.075015
+
+Сравнение с exp_02 (Random Forest)
+  RF RMSE в exp_02: 4.116668
+  RF RMSE в exp_04: 4.156987
+  delta RMSE: 0.040319
+  RF R2 в exp_02: 0.113823
+  RF R2 в exp_04: 0.096379
+  delta R2: -0.017444

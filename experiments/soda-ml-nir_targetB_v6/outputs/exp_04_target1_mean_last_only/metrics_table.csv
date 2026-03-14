@@ -1,0 +1,4 @@
+﻿experiment_name,model,model_display_name,n_rows,n_features,train_size,test_size,MAE,RMSE,R2
+target1_exp04_mean_last_only,ridge,Ridge,98,256,78,20,11.380769124429596,16.040532273637293,-12.454461570205947
+target1_exp04_mean_last_only,random_forest,Random Forest,98,256,78,20,3.245783333333334,4.156987440992319,0.09637924694478661
+target1_exp04_mean_last_only,gradient_boosting,Gradient Boosting,98,256,78,20,3.026582376242141,4.534119594116131,-0.0750154698851544

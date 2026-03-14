@@ -1,0 +1,31 @@
+{
+  "data_path": "C:\\Users\\user\\Desktop\\soda-ml-nir-main\\soda-ml-nir-main\\soda-ml-nir_targetB_v6\\launch_target1_k1\\dataset_target1_baseline_v1.csv",
+  "target_col": "target_value",
+  "time_col": "target_timestamp_for_scada",
+  "n_rows_total": 98,
+  "n_rows_train": 78,
+  "n_rows_test": 20,
+  "n_features": 1538,
+  "feature_cols_sample": [
+    "w60__rows",
+    "w120_30__rows",
+    "w60__mean__s01_fic12061_daca_pv",
+    "w60__min__s01_fic12061_daca_pv",
+    "w60__max__s01_fic12061_daca_pv",
+    "w60__std__s01_fic12061_daca_pv",
+    "w60__last__s01_fic12061_daca_pv",
+    "w60__delta__s01_fic12061_daca_pv",
+    "w60__mean__s01_fic12061_pida_op",
+    "w60__min__s01_fic12061_pida_op",
+    "w60__max__s01_fic12061_pida_op",
+    "w60__std__s01_fic12061_pida_op",
+    "w60__last__s01_fic12061_pida_op",
+    "w60__delta__s01_fic12061_pida_op",
+    "w60__mean__s01_fic12074_daca_pv",
+    "w60__min__s01_fic12074_daca_pv",
+    "w60__max__s01_fic12074_daca_pv",
+    "w60__std__s01_fic12074_daca_pv",
+    "w60__last__s01_fic12074_daca_pv",
+    "w60__delta__s01_fic12074_daca_pv"
+  ]
+}
