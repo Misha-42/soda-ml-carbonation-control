@@ -170,16 +170,16 @@ rf_tuning_v5_experiments_summary.csv
 ## Ключевые результаты
 
 ### Сравнение моделей по MAE
-![Сравнение моделей по MAE](reports/rf_tuning_v5_mae_comparison.png)
+![Сравнение моделей по MAE](reports/baseline_mae_comparison.png)
 
 ### Сравнение моделей по RMSE
-![Сравнение моделей по RMSE](reports/rf_tuning_v5_rmse_comparison.png)
+![Сравнение моделей по RMSE](reports/baseline_rmse_comparison.png)
 
 ### Важность признаков для Random Forest
-![Важность признаков для Random Forest](reports/rf_tuning_v5_rf_feature_importance.png)
+![Важность признаков для Random Forest](reports/baseline_rf_feature_importance.png)
 
 ### Важность признаков для XGBoost
-![Важность признаков для XGBoost](reports/rf_tuning_v5_xgb_feature_importance.png)
+![Важность признаков для XGBoost](reports/baseline_xgb_feature_importance.png)
 
 ---
 
