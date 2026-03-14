@@ -1,69 +1,270 @@
-# soda-ml-nir
 
-Минимальный baseline ML-проект для НИР по анализу технологического процесса производства соды.
 
-На этапе 1 цель — быстро и прозрачно сравнить несколько простых вариантов:
-- `RandomForestRegressor`
-- `XGBRegressor`
+```markdown
+# RF / XGBoost Baseline for Soda Carbonation Process
 
-## Структура проекта
+ML‑baseline проект для НИР по анализу технологического процесса производства кальцинированной соды.
 
-- `data/` — входные CSV-данные для обучения (ожидаются локально).
-- `src/data_prep.py` — загрузка CSV, базовая очистка, проверка обязательных столбцов, time-based split.
-- `src/features.py` — минимальная подготовка признаков (числовые колонки + обработка пропусков).
-- `src/train_baseline.py` — запуск baseline-экспериментов для RandomForest и XGBoost.
-- `src/evaluate.py` — расчёт метрик и сохранение результатов/отчёта.
-- `models/` — сохранённые модели по экспериментам.
-- `reports/` — CSV с метриками, сводка экспериментов и краткий Markdown-отчёт.
+Цель текущего этапа — быстро построить воспроизводимый baseline и сравнить две модели:
 
-## Быстрый запуск baseline
+- RandomForestRegressor
+- XGBRegressor
 
-1. Установите зависимости:
+Проект используется как основа для дальнейших экспериментов и развития ML‑модели управления процессом карбонизации.
+
+---
+
+# Project overview
+
+Процесс карбонизации — сложная нелинейная система, где множество технологических параметров влияет на целевой показатель процесса.
+
+Цель ML‑модели:
+
+предсказать целевой параметр процесса (например k1) на основе данных датчиков.
+
+Этот репозиторий содержит минимальный pipeline:
+
+
+# ML pipeline
+
+```mermaid
+flowchart LR
+    A[Industrial sensor data] --> B[Data preprocessing]
+    B --> C[Feature engineering]
+    C --> D[Train/Test split]
+    D --> E[Random Forest]
+    D --> F[XGBoost]
+    E --> G[Model evaluation]
+    F --> G
+    G --> H[Metrics]
+    G --> I[Feature importance]
+    G --> J[Reports and plots]
+
+```
+
+data → preprocessing → feature engineering → training → evaluation → reports
+
+```
+
+---
+
+# Repository structure
+
+```
+
+rf_tuning_v5
+│
+├── data/                # входные данные
+├── models/              # сохранённые модели
+├── nir/                 # текст НИР (структура исследования)
+├── reports/             # метрики, графики и отчёты
+├── src/                 # код пайплайна
+│
+├── requirements.txt     # зависимости
+└── README.md
+
+```
+
+---
+
+# Data
+
+Данные должны лежать в папке:
+
+```
+
+data/
+
+```
+
+Пример:
+
+```
+
+data/baseline_k1_6min_real.csv
+
+````
+
+CSV должен содержать:
+
+| column | описание |
+|------|------|
+| target | целевая переменная |
+| timestamp | временная колонка (опционально) |
+
+Если присутствует `timestamp`, используется time‑based split.
+
+---
+
+# ML Pipeline
+
+Основные компоненты проекта:
+
+### data_prep.py
+
+- загрузка CSV
+- очистка данных
+- проверка обязательных колонок
+- train/test split
+
+### features.py
+
+- выбор числовых признаков
+- обработка пропусков
+
+### train_baseline.py
+
+обучает модели:
+
+- RandomForest
+- XGBoost
+
+### evaluate.py
+
+- вычисляет метрики
+- сохраняет отчёты
+- строит графики
+
+---
+
+# Running baseline experiment
+
+Установка зависимостей:
 
 ```bash
 pip install -r requirements.txt
-```
+````
 
-2. Положите CSV в папку `data/`.
-
-CSV должен содержать:
-- целевую колонку (например, `target`)
-- временную колонку (например, `timestamp`) — если есть, будет использован time-based split
-
-3. Запустите эксперименты:
+Запуск обучения:
 
 ```bash
-python src/train_baseline.py --data-path data/your_data.csv --target target --time-column timestamp
+python src/train_baseline.py \
+    --data-path data/baseline_k1_6min_real.csv \
+    --target target \
+    --time-column timestamp
 ```
 
-Если временной колонки нет, можно не передавать `--time-column`; тогда будет использован split по порядку строк.
+Если временной колонки нет:
 
-После запуска появятся:
-- `models/rf_small.joblib`
-- `models/rf_medium.joblib`
-- `models/xgb_small.joblib`
-- `models/xgb_medium.joblib`
-- `reports/baseline_metrics.csv`
-- `reports/experiments_summary.csv`
-- `reports/baseline_report.md`
-- `reports/mae_comparison.png`
-- `reports/rmse_comparison.png`
-- `reports/rf_feature_importance.png`
-- `reports/xgb_feature_importance.png`
+```bash
+python src/train_baseline.py --data-path data/file.csv --target target
+```
 
-## Что лежит в experiments_summary.csv
+---
+
+# Generated models
+
+После обучения сохраняются модели:
+
+```
+models/
+├── rf_small.joblib
+├── rf_medium.joblib
+├── xgb_small.joblib
+└── xgb_medium.joblib
+```
+
+---
+
+# Reports
+
+Все результаты сохраняются в:
+
+```
+reports/
+```
+
+Это сразу делает README визуально сильнее.
+
+---
+
+```markdown
+# Key results
+
+## MAE comparison
+
+![MAE comparison](reports/rf_tuning_v5_mae_comparison.png)
+
+## RMSE comparison
+
+![RMSE comparison](reports/rf_tuning_v5_rmse_comparison.png)
+
+## Random Forest feature importance
+
+![RF feature importance](reports/rf_tuning_v5_rf_feature_importance.png)
+
+## XGBoost feature importance
+
+![XGBoost feature importance](reports/rf_tuning_v5_xgb_feature_importance.png)
+
+Основные файлы:
+
+```
+baseline_metrics.csv
+experiments_summary.csv
+baseline_report.md
+```
+
+Графики:
+
+```
+mae_comparison.png
+rmse_comparison.png
+rf_feature_importance.png
+xgb_feature_importance.png
+```
+
+---
+
+# Metrics
 
 Для каждого эксперимента сохраняются:
-- название модели,
-- параметры,
-- метрики (MAE, RMSE, R2),
-- дата запуска.
 
+| metric | описание                     |
+| ------ | ---------------------------- |
+| MAE    | Mean Absolute Error          |
+| RMSE   | Root Mean Squared Error      |
+| R²     | coefficient of determination |
 
-## Простые графики
+Все эксперименты записываются в:
 
-Pipeline автоматически строит графики и сохраняет их в `reports/`:
-- сравнение MAE (`mae_comparison.png`),
-- сравнение RMSE (`rmse_comparison.png`),
-- важности признаков для RandomForest (`rf_feature_importance.png`),
-- важности признаков для XGBoost (`xgb_feature_importance.png`).
+```
+experiments_summary.csv
+```
+
+---
+
+# Visualization
+
+Pipeline автоматически строит:
+
+* сравнение MAE
+* сравнение RMSE
+* feature importance для RandomForest
+* feature importance для XGBoost
+
+---
+
+# Next steps (NIR roadmap)
+
+Дальнейшее развитие проекта:
+
+* расширение feature engineering
+* hyperparameter tuning
+* временные признаки и лаги
+* сравнение моделей
+* интеграция в систему поддержки принятия решений
+
+---
+
+# Author
+
+Research project for industrial process modeling using machine learning.
+
+```
+
+Если хочешь, дальше можем за **5–7 минут сделать ещё сильнее**:
+- добавить **красивую схему ML pipeline**
+- вставить **графики результатов прямо в README**
+- сделать README **уровня research‑репозитория**.
+```
