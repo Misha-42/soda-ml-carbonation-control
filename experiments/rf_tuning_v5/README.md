@@ -1,5 +1,3 @@
-
-
 ````markdown
 # RF / XGBoost Baseline for Soda Carbonation Process
 
