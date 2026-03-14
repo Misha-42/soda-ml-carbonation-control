@@ -1,12 +1,7 @@
 
 
-```markdown
-# ML-система адаптивного управления карбонизацией БСК
 
-[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://python.org)
-[![sklearn](https://img.shields.io/badge/sklearn-1.3-orange)](https://scikit-learn.org)
-[![Status](https://img.shields.io/badge/НИР--2-baseline%20v1-green)]()
-[![Data](https://img.shields.io/badge/data-34%20смены-lightgrey)]()
+# ML-система адаптивного управления карбонизацией БСК
 
 Проект посвящён разработке **воспроизводимого baseline-контура машинного обучения**
 для прогнозирования сменных показателей процесса карбонизации бикарбонатной суспензии
