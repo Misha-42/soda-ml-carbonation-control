@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://python.org)
 [![sklearn](https://img.shields.io/badge/sklearn-1.3-orange)](https://scikit-learn.org)
 [![XGBoost](https://img.shields.io/badge/XGBoost-1.7-red)](https://xgboost.readthedocs.io)
-
+[![НИР-2](https://img.shields.io/badge/НИР--2-базовая модель%20v1-green)]()
 [![Data](https://img.shields.io/badge/data-34%20смены-lightgrey)]()
 
 Этот репозиторий — практическая часть НИР-2 по применению машинного обучения
