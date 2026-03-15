@@ -25,7 +25,32 @@
 - регрессия
 - краткосрочный прогноз технологического параметра
 
----
+
+```mermaid
+flowchart LR
+
+A[SCADA данные<br/>6-минутный шаг] --> B[Подготовка данных]
+B --> C[Формирование признаков]
+C --> D[Baseline ML-модель]
+D --> E[Прогноз temp_offgas_k1<br/>на t+6 минут]
+E --> F[Сравнение с фактом]
+F --> G[Метрики MAE / RMSE / R²]
+
+style A fill:#dbeafe,stroke:#2563eb,color:#1a1a1a
+style B fill:#e0f2fe,stroke:#0284c7,color:#1a1a1a
+style C fill:#fef9c3,stroke:#ca8a04,color:#1a1a1a
+style D fill:#f3e8ff,stroke:#9333ea,color:#1a1a1a
+style E fill:#dcfce7,stroke:#16a34a,color:#1a1a1a
+style F fill:#fee2e2,stroke:#dc2626,color:#1a1a1a
+style G fill:#d1fae5,stroke:#059669,color:#1a1a1a
+```
+
+Короткая подпись под неё:
+
+```md
+Схема показывает общую логику baseline-проекта: SCADA-данные проходят этап подготовки и формирования признаков, после чего модель строит краткосрочный прогноз температуры отходящего газа на следующий 6-минутный шаг, а качество прогноза оценивается по метрикам MAE, RMSE и R².
+```
+
 
 # Pipeline обучения
 
