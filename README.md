@@ -437,10 +437,3 @@ pip install -r requirements.txt
 
 ````
 
-2 следующих шага:
-
-1. замени этим текстом текущий `README.md`
-2. сделай коммит с сообщением:
-```bash
-git commit -m "Update main README with all experiments and v6 section"
-````
